@@ -1,0 +1,98 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    signingConfigs {
+        debug {
+            storeFile rootProject.file("buildsystem/signing/debug.jks")
+            storePassword "android"
+            keyAlias "android"
+            keyPassword "android"
+        }
+    }
+    compileSdkVersion "$versions.compile_sdk".toInteger()
+    buildToolsVersion "$versions.build_tools"
+    defaultConfig {
+        applicationId "com.daksh.scalpelandroid"
+        minSdkVersion 19
+        targetSdkVersion "$versions.target_sdk".toInteger()
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            // TODO Change to true
+            shrinkResources false
+            minifyEnabled false
+
+            // TODO Add all rules in proguard-rules.pro
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        // TODO Remove this later
+        abortOnError false
+
+        disable 'BinaryOperationInTimber'
+    }
+
+    apply from: "$rootDir/buildsystem/override_android_support_version.gradle"
+}
+
+dependencies {
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:${versions.kotlin}"
+    implementation "androidx.core:core-ktx:${versions.android_ktx}"
+
+    // Android
+    implementation "com.android.support:appcompat-v7:${versions.support}"
+
+    // Android Lifecycle
+    implementation "android.arch.lifecycle:extensions:${versions.lifecycle}"
+    implementation "android.arch.lifecycle:reactivestreams:${versions.lifecycle}"
+    kapt "android.arch.lifecycle:compiler:${versions.lifecycle}"
+
+    // RxJava
+    implementation "io.reactivex.rxjava2:rxjava:${versions.rxjava}"
+    implementation "io.reactivex.rxjava2:rxkotlin:${versions.rxkotlin}"
+    implementation "io.reactivex.rxjava2:rxandroid:${versions.rxandroid}"
+    implementation "com.jakewharton.rxbinding2:rxbinding-kotlin:${versions.rxbinding}"
+    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7-kotlin:${versions.rxbinding}"
+    implementation "com.jakewharton.rxbinding2:rxbinding-design-kotlin:${versions.rxbinding}"
+    implementation "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7-kotlin:${versions.rxbinding}"
+
+    // UI
+    implementation "com.android.support:design:${versions.support}"
+    implementation "com.android.support:recyclerview-v7:${versions.support}"
+    implementation "com.android.support:cardview-v7:${versions.support}"
+    implementation "com.android.support.constraint:constraint-layout:${versions.constraint_layout}"
+
+    // Dependency Injection
+    implementation "com.google.dagger:dagger:${versions.dagger}"
+    kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
+    kapt "com.google.dagger:dagger-android-processor:${versions.dagger}"
+    implementation "com.google.dagger:dagger-android:${versions.dagger}"
+    implementation "com.google.dagger:dagger-android-support:${versions.dagger}"
+
+    // Storage
+    implementation "android.arch.persistence.room:runtime:${versions.room}"
+    implementation "android.arch.persistence.room:rxjava2:${versions.room}"
+    kapt "android.arch.persistence.room:compiler:${versions.room}"
+
+    // Logging
+    implementation "com.jakewharton.timber:timber:${versions.timber}"
+
+    // Unit Testing
+    testImplementation "junit:junit:${versions.junit}"
+
+    // UI Testing
+    androidTestImplementation "com.android.support.test:runner:${versions.test_runner}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${versions.espresso}"
+}
