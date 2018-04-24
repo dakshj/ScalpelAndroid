@@ -1,0 +1,81 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "cb94e7ff3553c2e0b7be59b5f273482e",
+    "entities": [
+      {
+        "tableName": "Rule",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `extension` TEXT NOT NULL, `minBytesAmount` INTEGER NOT NULL, `maxBytesAmount` INTEGER NOT NULL, `headerBytes` TEXT NOT NULL, `footerBytes` TEXT, `bytesCaseSensitive` INTEGER NOT NULL, `reverseSearchFooter` INTEGER NOT NULL, `skipFooter` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extension",
+            "columnName": "extension",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minBytesAmount",
+            "columnName": "minBytesAmount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxBytesAmount",
+            "columnName": "maxBytesAmount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "headerBytes",
+            "columnName": "headerBytes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "footerBytes",
+            "columnName": "footerBytes",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "bytesCaseSensitive",
+            "columnName": "bytesCaseSensitive",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reverseSearchFooter",
+            "columnName": "reverseSearchFooter",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "skipFooter",
+            "columnName": "skipFooter",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"cb94e7ff3553c2e0b7be59b5f273482e\")"
+    ]
+  }
+}
