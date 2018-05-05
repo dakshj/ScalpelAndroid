@@ -79,6 +79,7 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:${versions.support}"
     implementation "com.android.support:cardview-v7:${versions.support}"
     implementation "com.android.support.constraint:constraint-layout:${versions.constraint_layout}"
+    implementation "com.nbsp:library:${versions.file_picker}"
 
     // Dependency Injection
     implementation "com.google.dagger:dagger:${versions.dagger}"
