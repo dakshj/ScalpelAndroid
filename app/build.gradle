@@ -96,6 +96,9 @@ dependencies {
     // Logging
     implementation "com.jakewharton.timber:timber:${versions.timber}"
 
+    // Utils
+    implementation "com.jakewharton.threetenabp:threetenabp:${versions.threetenabp}"
+
     // Unit Testing
     testImplementation "junit:junit:${versions.junit}"
 

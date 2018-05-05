@@ -34,6 +34,9 @@ buildscript {
             // Logging
             'timber'           : '4.7.0',
 
+            // Utils
+            'threetenabp'      : '1.1.0',
+
             // Testing
             'junit'            : '4.12',
             'test_runner'      : '1.0.1',
