@@ -1,9 +1,9 @@
-package com.daksh.scalpelandroid.room
+package com.daksh.scalpelandroid.storage.room
 
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.RoomDatabase
-import com.daksh.scalpelandroid.room.dao.RuleDao
-import com.daksh.scalpelandroid.room.entity.Rule
+import com.daksh.scalpelandroid.storage.room.dao.RuleDao
+import com.daksh.scalpelandroid.storage.room.entity.Rule
 
 @Database(
         entities = [

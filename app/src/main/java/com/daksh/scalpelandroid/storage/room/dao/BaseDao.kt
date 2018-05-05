@@ -1,4 +1,4 @@
-package com.daksh.scalpelandroid.room.dao
+package com.daksh.scalpelandroid.storage.room.dao
 
 import android.arch.persistence.room.Delete
 import android.arch.persistence.room.Insert

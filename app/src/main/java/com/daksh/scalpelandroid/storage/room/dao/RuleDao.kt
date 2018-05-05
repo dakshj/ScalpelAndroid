@@ -1,8 +1,8 @@
-package com.daksh.scalpelandroid.room.dao
+package com.daksh.scalpelandroid.storage.room.dao
 
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Query
-import com.daksh.scalpelandroid.room.entity.Rule
+import com.daksh.scalpelandroid.storage.room.entity.Rule
 import io.reactivex.Flowable
 
 @Dao

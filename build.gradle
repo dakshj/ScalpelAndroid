@@ -8,7 +8,7 @@ buildscript {
             'target_sdk'       : '27',
 
             // Kotlin
-            'kotlin'           : '1.2.31',
+            'kotlin'           : '1.2.41',
             'android_ktx'      : '0.3',
 
             // Android
