@@ -2,5 +2,6 @@
 
     <string name="app_name">ScalpelAndroid</string>
     <string name="select_file">Select File</string>
+    <string name="carve">Carve!</string>
 
 </resources>
