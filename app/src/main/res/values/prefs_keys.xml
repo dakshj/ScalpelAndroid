@@ -1,0 +1,5 @@
+<resources>
+
+    <string name="prefs_key_selected_file">selected_file</string>
+
+</resources>
