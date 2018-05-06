@@ -53,6 +53,18 @@ abstract class RuleDao : BaseDao<Rule> {
                         maxBytesAmount = 50000,
                         header = "<html>",
                         footer = "</html>"
+                ),
+                Rule(
+                        extension = "pdf",
+                        maxBytesAmount = 5000000,
+                        header = "%PDF",
+                        footer = "%EOF\\x0d"
+                ),
+                Rule(
+                        extension = "pdf",
+                        maxBytesAmount = 5000000,
+                        header = "%PDF",
+                        footer = "%EOF\\x0d"
                 )
         )
     }

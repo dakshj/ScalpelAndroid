@@ -18,14 +18,16 @@ data class Rule(
         /**
          * Stores header bytes in the Scalpel format.
          *
-         * *Does not* support Octal and regex as of now; so only plain text, hex, and wildcards.
+         * *Does not* support Octal, spaces ("\s"), and regex as of now;
+         * so only plain text, hex, and wildcards.
          */
         val header: String,
 
         /**
          * Stores header bytes in the Scalpel format.
          *
-         * *Does not* support Octal and regex as of now; so only plain text, hex, and wildcards.
+         * *Does not* support Octal, spaces ("\s"), and regex as of now;
+         * so only plain text, hex, and wildcards.
          */
         val footer: String? = null,
 
