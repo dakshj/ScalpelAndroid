@@ -1,6 +1,7 @@
 package com.daksh.scalpelandroid.screens.carve
 
 import android.arch.lifecycle.MutableLiveData
+import com.daksh.scalpelandroid.extensions.matchWithWildCard
 import com.daksh.scalpelandroid.extensions.toScalpelBytes
 import com.daksh.scalpelandroid.rx.RxAwareViewModel
 import com.daksh.scalpelandroid.rx.RxSchedulers
@@ -8,6 +9,7 @@ import com.daksh.scalpelandroid.storage.DirectoryManager
 import com.daksh.scalpelandroid.storage.prefs.AppSettings
 import com.daksh.scalpelandroid.storage.room.dao.RuleDao
 import com.daksh.scalpelandroid.storage.room.entity.Rule
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.toFlowable
 import org.threeten.bp.LocalDateTime
@@ -29,6 +31,44 @@ class CarveViewModel @Inject constructor(
 
     init {
         liveSelectedSourceFilePath.value = appSettings.selectedSourceFile
+        addStaticRulesToDb()
+    }
+
+    private fun addStaticRulesToDb() {
+        Completable.fromAction {
+            if (!ruleDao.isEmpty()) {
+                ruleDao.clear()
+            }
+
+            ruleDao.insert(
+                    Rule(
+                            extension = "jpg",
+                            maxBytesAmount = 200000000,
+                            header = "\\xff\\xd8\\xff\\xe0\\x00\\x10",
+                            footer = "\\xff\\xd9"
+                    ),
+                    Rule(
+                            extension = "gif",
+                            maxBytesAmount = 5000000,
+                            header = "\\x47\\x49\\x46\\x38\\x37\\x61",
+                            footer = "\\x00\\x3b"
+                    ),
+                    Rule(
+                            extension = "gif",
+                            maxBytesAmount = 5000000,
+                            header = "\\x47\\x49\\x46\\x38\\x39\\x61",
+                            footer = "\\x00\\x00\\x3b"
+                    ),
+                    Rule(
+                            extension = "html",
+                            maxBytesAmount = 50000,
+                            header = "<html>",
+                            footer = "</html>"
+                    )
+            )
+        }
+                .subscribeOn(RxSchedulers.database)
+                .subscribe({}, { Timber.e(it, "Error while inserting rules!") })
     }
 
     var selectedFile: File?
@@ -56,7 +96,10 @@ class CarveViewModel @Inject constructor(
         val currentRunDirectory = directoryManager.getCurrentRunDirectory()
 
         readSourceFile()
-                .doOnSuccess { sourceFileBytes = it.toList() }
+                .flatMap {
+                    sourceFileBytes = it.toList()
+                    Single.just(it)
+                }
 
                 .observeOn(RxSchedulers.database)
                 .flatMap { Single.fromCallable { ruleDao.getAll() } }
@@ -73,10 +116,12 @@ class CarveViewModel @Inject constructor(
                     val headerBytes = rule.header.toScalpelBytes().toList()
                     val footerBytes = rule.footer?.toScalpelBytes()?.toList()
 
-                    sourceFileBytes
+                    val possibleCarves = sourceFileBytes
                             .windowed(headerBytes.size)
                             .mapIndexed { index, list -> index to list }
-                            .filter { it.second == headerBytes }
+                            .filter {
+                                it.second.matchWithWildCard(headerBytes)
+                            }
                             .map { it.first }
 
                             // Get List of Bytes from Header to max bytes amount
@@ -90,43 +135,79 @@ class CarveViewModel @Inject constructor(
                             // If footer bytes are null, then save the entire List<Byte> as a file
                             .filter {
                                 if (footerBytes == null) {
+                                    // TODO Do this only if we get the -b flag
                                     saveToFile(it, rule, dirForRule).let {
                                         carvedFiles.add(it)
                                     }
 
-                                    return@filter false
-                                }
-
-                                return@filter true
-                            }
-
-                            // If not, then iterate over the window to find the footer
-                            .windowed(footerBytes!!.size)
-                            .mapIndexed { index, list -> index to list }
-                            .filter { it.second == footerBytes }
-                            // Map to index of footer window
-                            .map { it.first }
-
-                            // Reverse it if rule says so
-                            .run {
-                                if (rule.reverseSearchFooter) {
-                                    this.reversed()
-                                }
-
-                                this
-                            }
-
-                            // Ensure a minimum carve size
-                            .filter {
-                                val carveSize = if (rule.skipFooter) {
-                                    it
+                                    false
                                 } else {
-                                    it + footerBytes.size
+                                    true
                                 }
-
-                                carveSize >= rule.minBytesAmount
                             }
 
+                    // If footer bytes are non-null:
+
+                    possibleCarves.forEach { currCarve ->
+                        val footerStartIndex = maxOf(headerBytes.size, rule.minBytesAmount) -
+
+                                // Reduce footerStartIndex based on whether to include or the footer
+                                if (!rule.skipFooter) {
+                                    footerBytes!!.size
+                                } else {
+                                    0
+                                }
+
+                        currCarve.subList(footerStartIndex, currCarve.size)
+                                .windowed(footerBytes!!.size)
+                                .mapIndexed { index, list -> index to list }
+                                .filter {
+                                    it.second.matchWithWildCard(footerBytes)
+                                }
+                                // Map to index of footer window
+                                .map { it.first }
+
+                                // Reverse it if rule says so
+                                .run {
+                                    if (rule.reverseSearchFooter) {
+                                        this.reversed()
+                                    } else {
+                                        this
+                                    }
+                                }
+
+                                // Ensure a minimum carve size
+                                .filter {
+                                    val carveSize = if (rule.skipFooter) {
+                                        it
+                                    } else {
+                                        it + footerBytes.size
+                                    }
+
+                                    carveSize >= rule.minBytesAmount
+                                }
+
+                                // Take the first (or last) filtered footer index
+                                .take(1)
+
+                                .run {
+                                    val carveToSave =
+                                            if (this.isEmpty()) {
+                                                currCarve
+                                            } else {
+                                                if (rule.skipFooter) {
+                                                    currCarve.subList(0, footerStartIndex)
+                                                } else {
+                                                    currCarve.subList(0,
+                                                            footerStartIndex + footerBytes.size)
+                                                }
+                                            }
+
+                                    saveToFile(carveToSave, rule, dirForRule).let {
+                                        carvedFiles.add(it)
+                                    }
+                                }
+                    }
 
                     carvedFiles.toFlowable()
                 }
