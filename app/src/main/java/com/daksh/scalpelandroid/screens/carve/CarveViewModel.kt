@@ -68,20 +68,24 @@ class CarveViewModel @Inject constructor(
         val currentRunDirectory = directoryManager.getCurrentRunDirectory()
 
         readSourceFile()
+
+                // Save source file bytes to an object for later use
                 .flatMap {
                     sourceFileBytes = it.toList()
                     Single.just(it)
                 }
 
+                // Read all rules from DB
                 .observeOn(RxSchedulers.database)
                 .flatMap { Single.fromCallable { ruleDao.getAll() } }
                 .toFlowable()
                 .flatMapIterable { it }
+
+                // Process each rule in parallel, to be run on disk
                 .parallel()
                 .runOn(RxSchedulers.disk)
-                .flatMap { rule ->
-                    // TODO Check if sourceFileBytes has been set properly or not
 
+                .flatMap { rule ->
                     val dirForRule = directoryManager.getDirectoryForRule(rule, currentRunDirectory)
                     val carvedFiles = mutableListOf<File>()
 
