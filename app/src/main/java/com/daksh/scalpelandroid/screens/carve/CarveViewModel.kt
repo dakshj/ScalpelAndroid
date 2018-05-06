@@ -118,9 +118,7 @@ class CarveViewModel @Inject constructor(
                                             if (rule.forceSave) {
                                                 // Save the file and skip it from going into
                                                 // `possibleCarves`
-                                                saveToFile(it, rule, dirForRule).let {
-                                                    carvedFiles.add(it)
-                                                }
+                                                saveToFile(it, rule, dirForRule, carvedFiles)
                                             }
 
                                             false
@@ -178,9 +176,7 @@ class CarveViewModel @Inject constructor(
 
                                 // Save carves for each found footer
                                 .onEach {
-                                    saveToFile(it, rule, dirForRule).let {
-                                        carvedFiles.add(it)
-                                    }
+                                    saveToFile(it, rule, dirForRule, carvedFiles)
                                 }
 
                                 .run {
@@ -188,9 +184,7 @@ class CarveViewModel @Inject constructor(
                                     if (this.isEmpty()) {
                                         if (rule.forceSave) {
                                             // Save the entire carving
-                                            saveToFile(currCarve, rule, dirForRule).let {
-                                                carvedFiles.add(it)
-                                            }
+                                            saveToFile(currCarve, rule, dirForRule, carvedFiles)
                                         }
                                     }
                                 }
@@ -230,11 +224,14 @@ class CarveViewModel @Inject constructor(
                 .let { disposables += it }
     }
 
-    private fun saveToFile(list: List<Byte>, rule: Rule, dirForRule: File): File {
-        val carvedFileBytes = list.toByteArray()
-        val carvedFile = File(dirForRule, generateCarvedFileName(rule))
-        carvedFile.writeBytes(carvedFileBytes)
-        return carvedFile
+    private fun saveToFile(bytes: List<Byte>, rule: Rule, dirForRule: File,
+            carvedFiles: MutableList<File>) {
+        // TODO Validate the file, and save only if it is a valid file format!
+
+        val fileCarved = File(dirForRule, generateCarvedFileName(rule))
+        fileCarved.writeBytes(bytes.toByteArray())
+
+        carvedFiles.add(fileCarved)
     }
 
     private fun generateCarvedFileName(rule: Rule): String =
