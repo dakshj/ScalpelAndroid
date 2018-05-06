@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="8dp">
@@ -24,6 +25,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <android.support.constraint.Barrier
+        android:id="@+id/barrierSelectFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="textSelectedFile,buttonSelectFile"/>
+
     <Button
         android:id="@+id/buttonCarve"
         android:layout_width="0dp"
@@ -32,16 +40,18 @@
         android:text="@string/carve"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textSelectedFile"/>
+        app:layout_constraintTop_toBottomOf="@id/barrierSelectFile"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/listResults"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="16dp"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buttonCarve"/>
+        app:layout_constraintTop_toBottomOf="@id/buttonCarve"
+        tools:listitem="@layout/carved_files_list_item"/>
 
 </android.support.constraint.ConstraintLayout>
