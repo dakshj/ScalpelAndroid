@@ -3,6 +3,7 @@ package com.daksh.scalpelandroid.screens.carve
 import android.arch.lifecycle.MutableLiveData
 import com.daksh.scalpelandroid.extensions.matchWithWildCard
 import com.daksh.scalpelandroid.extensions.toScalpelBytes
+import com.daksh.scalpelandroid.livedata.SingleLiveEvent
 import com.daksh.scalpelandroid.rx.RxAwareViewModel
 import com.daksh.scalpelandroid.rx.RxSchedulers
 import com.daksh.scalpelandroid.storage.DirectoryManager
@@ -11,6 +12,7 @@ import com.daksh.scalpelandroid.storage.room.dao.RuleDao
 import com.daksh.scalpelandroid.storage.room.entity.Rule
 import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.toFlowable
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -27,7 +29,8 @@ class CarveViewModel @Inject constructor(
 
     val liveSelectedSourceFilePath: MutableLiveData<String> = MutableLiveData()
     val liveCarving: MutableLiveData<Boolean> = MutableLiveData()
-    val liveCarvedFiles: MutableLiveData<List<String>> = MutableLiveData()
+    val liveCarvedFiles: MutableLiveData<List<File>> = MutableLiveData()
+    val singleLiveMessage: SingleLiveEvent<String> = SingleLiveEvent()
 
     init {
         liveSelectedSourceFilePath.value = appSettings.selectedSourceFile
@@ -35,38 +38,7 @@ class CarveViewModel @Inject constructor(
     }
 
     private fun addStaticRulesToDb() {
-        Completable.fromAction {
-            if (!ruleDao.isEmpty()) {
-                ruleDao.clear()
-            }
-
-            ruleDao.insert(
-                    Rule(
-                            extension = "jpg",
-                            maxBytesAmount = 200000000,
-                            header = "\\xff\\xd8\\xff\\xe0\\x00\\x10",
-                            footer = "\\xff\\xd9"
-                    ),
-                    Rule(
-                            extension = "gif",
-                            maxBytesAmount = 5000000,
-                            header = "\\x47\\x49\\x46\\x38\\x37\\x61",
-                            footer = "\\x00\\x3b"
-                    ),
-                    Rule(
-                            extension = "gif",
-                            maxBytesAmount = 5000000,
-                            header = "\\x47\\x49\\x46\\x38\\x39\\x61",
-                            footer = "\\x00\\x00\\x3b"
-                    ),
-                    Rule(
-                            extension = "html",
-                            maxBytesAmount = 50000,
-                            header = "<html>",
-                            footer = "</html>"
-                    )
-            )
-        }
+        Completable.fromAction { ruleDao.addStaticRules() }
                 .subscribeOn(RxSchedulers.database)
                 .subscribe({}, { Timber.e(it, "Error while inserting rules!") })
     }
@@ -87,7 +59,7 @@ class CarveViewModel @Inject constructor(
         }
 
     fun carve() {
-        val allCarvedFiles = mutableListOf<String>()
+        val allCarvedFiles = mutableListOf<File>()
 
         liveCarving.value = true
 
@@ -111,18 +83,16 @@ class CarveViewModel @Inject constructor(
                     // TODO Check if sourceFileBytes has been set properly or not
 
                     val dirForRule = directoryManager.getDirectoryForRule(rule, currentRunDirectory)
-                    val carvedFiles = mutableListOf<String>()
+                    val carvedFiles = mutableListOf<File>()
 
-                    val headerBytes = rule.header.toScalpelBytes().toList()
-                    val footerBytes = rule.footer?.toScalpelBytes()?.toList()
+                    val headerBytes = rule.header.toScalpelBytes()
+                    val footerBytes = rule.footer?.toScalpelBytes()
 
-                    val possibleCarves = sourceFileBytes
-                            .windowed(headerBytes.size)
-                            .mapIndexed { index, list -> index to list }
+                    val possibleCarves = (0 until sourceFileBytes.size - headerBytes.size)
                             .filter {
-                                it.second.matchWithWildCard(headerBytes)
+                                sourceFileBytes.subList(it, it + headerBytes.size)
+                                        .matchWithWildCard(headerBytes)
                             }
-                            .map { it.first }
 
                             // Get List of Bytes from Header to max bytes amount
                             .map {
@@ -158,14 +128,11 @@ class CarveViewModel @Inject constructor(
                                     0
                                 }
 
-                        currCarve.subList(footerStartIndex, currCarve.size)
-                                .windowed(footerBytes!!.size)
-                                .mapIndexed { index, list -> index to list }
+                        (footerStartIndex until currCarve.size - footerBytes!!.size)
                                 .filter {
-                                    it.second.matchWithWildCard(footerBytes)
+                                    currCarve.subList(it, it + footerBytes.size)
+                                            .matchWithWildCard(footerBytes)
                                 }
-                                // Map to index of footer window
-                                .map { it.first }
 
                                 // Reverse it if rule says so
                                 .run {
@@ -186,9 +153,6 @@ class CarveViewModel @Inject constructor(
 
                                     carveSize >= rule.minBytesAmount
                                 }
-
-                                // Take the first (or last) filtered footer index
-                                .take(1)
 
                                 .run {
                                     val carveToSave =
@@ -213,21 +177,23 @@ class CarveViewModel @Inject constructor(
                 }
                 .sequential()
                 .observeOn(RxSchedulers.main)
+                .doFinally { liveCarving.value = false }
                 .subscribe({
                     allCarvedFiles.add(it)
                     liveCarvedFiles.value = allCarvedFiles
                 }, {
-                    Timber.e(it, "Error while carving data!")
+                    singleLiveMessage.value = "Error while carving data!"
                 }, {
-                    // TODO  Update UI after carving complete
+                    singleLiveMessage.value = "Completed carving!"
                 })
+                .let { disposables += it }
     }
 
-    private fun saveToFile(list: List<Byte>, rule: Rule, dirForRule: File): String {
+    private fun saveToFile(list: List<Byte>, rule: Rule, dirForRule: File): File {
         val carvedFileBytes = list.toByteArray()
         val carvedFile = File(dirForRule, generateCarvedFileName(rule))
         carvedFile.writeBytes(carvedFileBytes)
-        return carvedFile.absolutePath
+        return carvedFile
     }
 
     private fun generateCarvedFileName(rule: Rule): String =

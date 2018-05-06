@@ -1,7 +1,6 @@
 package com.daksh.scalpelandroid.extensions
 
-fun String.toScalpelBytes(): ByteArray {
-
+fun String.toScalpelBytes(): List<Byte> {
     val hexStartIndices = this.indices
 
             // Filter by backslash
@@ -15,22 +14,19 @@ fun String.toScalpelBytes(): ByteArray {
 
             .toList()
 
-    val result = ByteArray(this.length - hexStartIndices.size * 3)
+    val result = mutableListOf<Byte>()
 
     var i = 0
-    var resultI = 0
 
     while (i < this.length) {
-        if (i in hexStartIndices) {
+        i += if (i in hexStartIndices) {
             val hexString = this.substring(i + 2, i + 4)
-            result[resultI] = hexString.toInt(16).toByte()
-            i += 4
+            result.add(hexString.toInt(16).toByte())
+            4
         } else {
-            result[resultI] = this[i].toByte()
-            i += 1
+            result.add(this[i].toByte())
+            1
         }
-
-        resultI++
     }
 
     return result

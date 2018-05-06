@@ -58,6 +58,7 @@ class CarveActivity : BaseActivity() {
 
         buttonCarve.clicks().subscribe {
             viewModel.carve()
+            listAdapter.updateList(listOf())
         }
 
         snackBarCarving = Snackbar.make(listResults, getString(R.string.carving),
@@ -65,6 +66,9 @@ class CarveActivity : BaseActivity() {
         snackBarCarving.setAction(getString(R.string.cancel)) {
             viewModel.cancelCarving()
         }
+
+        listAdapter = CarvedFilesListAdapter(viewModel = viewModel)
+        listResults.adapter = listAdapter
     }
 
     private fun setUpLiveDataObservers() {
@@ -89,6 +93,10 @@ class CarveActivity : BaseActivity() {
             it?.let {
                 listAdapter.updateList(it)
             }
+        }
+
+        viewModel.singleLiveMessage.observeK(this) {
+            it?.let { shortSnackbar(listResults, it) }
         }
     }
 

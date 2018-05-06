@@ -1,9 +1,10 @@
 package com.daksh.scalpelandroid.screens.carve
 
 import android.support.v7.util.DiffUtil
+import java.io.File
 
-class CarvedFilesDiffUtilCallback(private val oldList: List<String>,
-        private val newList: List<String>) : DiffUtil.Callback() {
+class CarvedFilesDiffUtilCallback(private val oldList: List<File>,
+        private val newList: List<File>) : DiffUtil.Callback() {
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
             oldList[oldItemPosition] == newList[newItemPosition]
