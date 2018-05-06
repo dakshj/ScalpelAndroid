@@ -15,9 +15,9 @@ data class Rule(
 
         val maxBytesAmount: Long,
 
-        val headerBytes: String,
+        val header: String,
 
-        val footerBytes: String? = null,
+        val footer: String? = null,
 
         val bytesCaseSensitive: Boolean = true,
 

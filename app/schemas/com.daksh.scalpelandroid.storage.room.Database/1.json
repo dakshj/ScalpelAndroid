@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "cb94e7ff3553c2e0b7be59b5f273482e",
+    "identityHash": "5dc94fe91b04da16dfedcd0d72e43b39",
     "entities": [
       {
         "tableName": "Rule",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `extension` TEXT NOT NULL, `minBytesAmount` INTEGER NOT NULL, `maxBytesAmount` INTEGER NOT NULL, `headerBytes` TEXT NOT NULL, `footerBytes` TEXT, `bytesCaseSensitive` INTEGER NOT NULL, `reverseSearchFooter` INTEGER NOT NULL, `skipFooter` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `extension` TEXT NOT NULL, `minBytesAmount` INTEGER NOT NULL, `maxBytesAmount` INTEGER NOT NULL, `header` TEXT NOT NULL, `footer` TEXT, `bytesCaseSensitive` INTEGER NOT NULL, `reverseSearchFooter` INTEGER NOT NULL, `skipFooter` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -33,14 +33,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "headerBytes",
-            "columnName": "headerBytes",
+            "fieldPath": "header",
+            "columnName": "header",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "footerBytes",
-            "columnName": "footerBytes",
+            "fieldPath": "footer",
+            "columnName": "footer",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -75,7 +75,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"cb94e7ff3553c2e0b7be59b5f273482e\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"5dc94fe91b04da16dfedcd0d72e43b39\")"
     ]
   }
 }
