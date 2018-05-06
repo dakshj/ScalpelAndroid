@@ -26,6 +26,6 @@ data class Rule(
         val skipFooter: Boolean = false
 ) {
     companion object {
-        const val WILDCARD = "?"
+        const val WILDCARD: Char = '?'
     }
 }
