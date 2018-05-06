@@ -133,16 +133,9 @@ class CarveViewModel @Inject constructor(
                     // If footer bytes are non-null:
 
                     possibleCarves.forEach { currCarve ->
-                        val footerStartIndex = maxOf(headerBytes.size, rule.minBytesAmount) -
+                        val footerStartIndex = maxOf(headerBytes.size, rule.minBytesAmount)
 
-                                // Reduce footerStartIndex based on whether to include or the footer
-                                if (!rule.skipFooter) {
-                                    footerBytes!!.size
-                                } else {
-                                    0
-                                }
-
-                        (footerStartIndex..currCarve.size - footerBytes!!.size)
+                        (footerStartIndex..(currCarve.size - footerBytes!!.size))
                                 .filter {
                                     currCarve.subList(it, it + footerBytes.size)
                                             .matchWithWildCard(footerBytes)
