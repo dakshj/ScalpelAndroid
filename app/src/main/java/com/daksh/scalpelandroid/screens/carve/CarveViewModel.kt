@@ -10,10 +10,12 @@ import com.daksh.scalpelandroid.storage.DirectoryManager
 import com.daksh.scalpelandroid.storage.prefs.AppSettings
 import com.daksh.scalpelandroid.storage.room.dao.RuleDao
 import com.daksh.scalpelandroid.storage.room.entity.Rule
+import io.reactivex.BackpressureStrategy
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.rxkotlin.toFlowable
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
@@ -31,6 +33,8 @@ class CarveViewModel @Inject constructor(
     val liveCarving: MutableLiveData<Boolean> = MutableLiveData()
     val liveCarvedFiles: MutableLiveData<List<File>> = MutableLiveData()
     val singleLiveMessage: SingleLiveEvent<String> = SingleLiveEvent()
+
+    private var carvingDisposable: Disposable? = null
 
     init {
         liveSelectedSourceFilePath.value = appSettings.selectedSourceFile
@@ -86,111 +90,111 @@ class CarveViewModel @Inject constructor(
                 .runOn(RxSchedulers.disk)
 
                 .flatMap { rule ->
-                    val dirForRule = directoryManager.getDirectoryForRule(rule, currentRunDirectory)
-                    val carvedFiles = mutableListOf<File>()
+                    Flowable.create<File>({ emitter ->
+                        val dirForRule = directoryManager.getDirectoryForRule(rule, currentRunDirectory)
 
-                    val headerBytes = rule.header.toScalpelBytes()
-                    val footerBytes = rule.footer?.toScalpelBytes()
+                        val headerBytes = rule.header.toScalpelBytes()
+                        val footerBytes = rule.footer?.toScalpelBytes()
 
-                    val possibleCarves =
-                    // Iterate over all start indices of each window
-                            (0..sourceFileBytes.size - headerBytes.size)
+                        val possibleCarves =
+                        // Iterate over all start indices of each window
+                                (0..sourceFileBytes.size - headerBytes.size)
 
-                                    // Filter those windows which match header bytes
+                                        // Filter those windows which match header bytes
+                                        .filter {
+                                            sourceFileBytes.subList(it, it + headerBytes.size)
+                                                    .matchWithWildCard(headerBytes)
+                                        }
+
+                                        // Get Bytes from Header to max bytes amount
+                                        .map {
+                                            // Prevent overflow by choosing min of max bytes,
+                                            // or the end of the byte stream
+                                            val end = minOf(it + rule.maxBytesAmount,
+                                                    sourceFileBytes.size)
+                                            sourceFileBytes.subList(it, end)
+                                        }
+
+                                        // If footer bytes are null, then save the entire
+                                        // List<Byte> as a file
+                                        .filter {
+                                            if (footerBytes == null) {
+                                                if (rule.forceSave) {
+                                                    // Save the file and skip it from going into
+                                                    // `possibleCarves`
+                                                    saveToFile(it, rule, dirForRule)?.let {
+                                                        emitter.onNext(it)
+                                                    }
+                                                }
+
+                                                false
+                                            } else {
+                                                // Put this carving into `possibleCarves`
+                                                true
+                                            }
+                                        }
+
+                        // If footer bytes are non-null:
+
+                        possibleCarves.forEach { currCarve ->
+                            val footerStartIndex = maxOf(headerBytes.size, rule.minBytesAmount)
+
+                            (footerStartIndex..(currCarve.size - footerBytes!!.size))
                                     .filter {
-                                        sourceFileBytes.subList(it, it + headerBytes.size)
-                                                .matchWithWildCard(headerBytes)
+                                        currCarve.subList(it, it + footerBytes.size)
+                                                .matchWithWildCard(footerBytes)
                                     }
 
-                                    // Get Bytes from Header to max bytes amount
+                                    // Reverse it if rule says so
+                                    .run {
+                                        if (rule.reverseSearchFooter) {
+                                            this.reversed()
+                                        } else {
+                                            this
+                                        }
+                                    }
+
+                                    // Map carve size (since index is not required anymore)
                                     .map {
-                                        // Prevent overflow by choosing min of max bytes,
-                                        // or the end of the byte stream
-                                        val end = minOf(it + rule.maxBytesAmount,
-                                                sourceFileBytes.size)
-                                        sourceFileBytes.subList(it, end)
+                                        if (rule.skipFooter) {
+                                            it
+                                        } else {
+                                            it + footerBytes.size
+                                        }
                                     }
 
-                                    // If footer bytes are null, then save the entire
-                                    // List<Byte> as a file
+                                    // Ensure a minimum carve size
                                     .filter {
-                                        if (footerBytes == null) {
+                                        it >= rule.minBytesAmount
+                                    }
+
+                                    // Map to bytes carved from starting to carve size
+                                    .map {
+                                        currCarve.subList(0, it)
+                                    }
+
+                                    // Save carves for each found footer
+                                    .onEach {
+                                        saveToFile(it, rule, dirForRule)?.let {
+                                            emitter.onNext(it)
+                                        }
+                                    }
+
+                                    .run {
+                                        // If the list of carves is empty
+                                        if (this.isEmpty()) {
                                             if (rule.forceSave) {
-                                                // Save the file and skip it from going into
-                                                // `possibleCarves`
-                                                saveToFile(it, rule, dirForRule)?.let {
-                                                    carvedFiles.add(it)
+                                                // Save the entire carving
+                                                saveToFile(currCarve, rule, dirForRule)?.let {
+                                                    emitter.onNext(it)
                                                 }
                                             }
-
-                                            false
-                                        } else {
-                                            // Put this carving into `possibleCarves`
-                                            true
                                         }
                                     }
+                        }
 
-                    // If footer bytes are non-null:
-
-                    possibleCarves.forEach { currCarve ->
-                        val footerStartIndex = maxOf(headerBytes.size, rule.minBytesAmount)
-
-                        (footerStartIndex..(currCarve.size - footerBytes!!.size))
-                                .filter {
-                                    currCarve.subList(it, it + footerBytes.size)
-                                            .matchWithWildCard(footerBytes)
-                                }
-
-                                // Reverse it if rule says so
-                                .run {
-                                    if (rule.reverseSearchFooter) {
-                                        this.reversed()
-                                    } else {
-                                        this
-                                    }
-                                }
-
-                                // Map carve size (since index is not required anymore)
-                                .map {
-                                    if (rule.skipFooter) {
-                                        it
-                                    } else {
-                                        it + footerBytes.size
-                                    }
-                                }
-
-                                // Ensure a minimum carve size
-                                .filter {
-                                    it >= rule.minBytesAmount
-                                }
-
-                                // Map to bytes carved from starting to carve size
-                                .map {
-                                    currCarve.subList(0, it)
-                                }
-
-                                // Save carves for each found footer
-                                .onEach {
-                                    saveToFile(it, rule, dirForRule)?.let {
-                                        carvedFiles.add(it)
-                                    }
-                                }
-
-                                .run {
-                                    // If the list of carves is empty
-                                    if (this.isEmpty()) {
-                                        if (rule.forceSave) {
-                                            // Save the entire carving
-                                            saveToFile(currCarve, rule, dirForRule)?.let {
-                                                carvedFiles.add(it)
-                                            }
-                                        }
-                                    }
-                                }
-                    }
-
-                    // Return Flowable of carved Files, which continues the Rx chain
-                    carvedFiles.toFlowable()
+                        emitter.onComplete()
+                    }, BackpressureStrategy.BUFFER)
                 }
 
                 // Bring back to Flowable (from ParallelFlowable)
@@ -220,7 +224,10 @@ class CarveViewModel @Inject constructor(
                 )
 
                 // Dispose it
-                .let { disposables += it }
+                .let {
+                    disposables += it
+                    carvingDisposable = it
+                }
     }
 
     private fun saveToFile(bytes: List<Byte>, rule: Rule, dirForRule: File): File? {
@@ -253,6 +260,15 @@ class CarveViewModel @Inject constructor(
     }
 
     fun cancelCarving() {
+        // Cancel the carving process
+        carvingDisposable?.let {
+            if (!it.isDisposed) {
+                it.dispose()
+                Timber.d("Disposed carving Flowable")
+            }
+        }
+
+        // Update the UI
         liveCarving.value = false
     }
 
