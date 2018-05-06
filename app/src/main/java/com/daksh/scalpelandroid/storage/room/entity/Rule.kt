@@ -11,9 +11,9 @@ data class Rule(
 
         val extension: String,
 
-        val minBytesAmount: Long = 0,
+        val minBytesAmount: Int = 0,
 
-        val maxBytesAmount: Long,
+        val maxBytesAmount: Int,
 
         val header: String,
 

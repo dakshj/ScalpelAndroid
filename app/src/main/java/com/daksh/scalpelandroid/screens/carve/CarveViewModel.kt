@@ -1,6 +1,7 @@
 package com.daksh.scalpelandroid.screens.carve
 
 import android.arch.lifecycle.MutableLiveData
+import com.daksh.scalpelandroid.extensions.toScalpelBytes
 import com.daksh.scalpelandroid.rx.RxAwareViewModel
 import com.daksh.scalpelandroid.rx.RxSchedulers
 import com.daksh.scalpelandroid.storage.DirectoryManager
@@ -50,12 +51,12 @@ class CarveViewModel @Inject constructor(
 
         liveCarving.value = true
 
-        lateinit var sourceFileBytes: ByteArray
+        lateinit var sourceFileBytes: List<Byte>
 
         val currentRunDirectory = directoryManager.getCurrentRunDirectory()
 
         readSourceFile()
-                .doOnSuccess { sourceFileBytes = it }
+                .doOnSuccess { sourceFileBytes = it.toList() }
 
                 .observeOn(RxSchedulers.database)
                 .flatMap { Single.fromCallable { ruleDao.getAll() } }
@@ -63,19 +64,69 @@ class CarveViewModel @Inject constructor(
                 .flatMapIterable { it }
                 .parallel()
                 .runOn(RxSchedulers.disk)
-                .flatMap {
-                    val dirForRule = directoryManager.getDirectoryForRule(it, currentRunDirectory)
+                .flatMap { rule ->
+                    // TODO Check if sourceFileBytes has been set properly or not
+
+                    val dirForRule = directoryManager.getDirectoryForRule(rule, currentRunDirectory)
                     val carvedFiles = mutableListOf<String>()
 
-                    // TODO Check if sourceFileBytes has been set properly or not
-                    // TODO Carve files in sourceFileBytes
+                    val headerBytes = rule.header.toScalpelBytes().toList()
+                    val footerBytes = rule.footer?.toScalpelBytes()?.toList()
 
-                    // For each found file:
-                    val carvedFileBytes = ByteArray(1)
-                    val carvedFile = File(dirForRule, generateCarvedFileName(it))
-                    carvedFile.writeBytes(carvedFileBytes)
-                    carvedFiles.add(carvedFile.absolutePath)
-                    //
+                    sourceFileBytes
+                            .windowed(headerBytes.size)
+                            .mapIndexed { index, list -> index to list }
+                            .filter { it.second == headerBytes }
+                            .map { it.first }
+
+                            // Get List of Bytes from Header to max bytes amount
+                            .map {
+                                // Prevent overflow by choosing min of max bytes, or the end of the
+                                // byte stream
+                                val end = minOf(it + rule.maxBytesAmount, sourceFileBytes.size)
+                                sourceFileBytes.subList(it, end)
+                            }
+
+                            // If footer bytes are null, then save the entire List<Byte> as a file
+                            .filter {
+                                if (footerBytes == null) {
+                                    saveToFile(it, rule, dirForRule).let {
+                                        carvedFiles.add(it)
+                                    }
+
+                                    return@filter false
+                                }
+
+                                return@filter true
+                            }
+
+                            // If not, then iterate over the window to find the footer
+                            .windowed(footerBytes!!.size)
+                            .mapIndexed { index, list -> index to list }
+                            .filter { it.second == footerBytes }
+                            // Map to index of footer window
+                            .map { it.first }
+
+                            // Reverse it if rule says so
+                            .run {
+                                if (rule.reverseSearchFooter) {
+                                    this.reversed()
+                                }
+
+                                this
+                            }
+
+                            // Ensure a minimum carve size
+                            .filter {
+                                val carveSize = if (rule.skipFooter) {
+                                    it
+                                } else {
+                                    it + footerBytes.size
+                                }
+
+                                carveSize >= rule.minBytesAmount
+                            }
+
 
                     carvedFiles.toFlowable()
                 }
@@ -84,12 +135,18 @@ class CarveViewModel @Inject constructor(
                 .subscribe({
                     allCarvedFiles.add(it)
                     liveCarvedFiles.value = allCarvedFiles
-                    // TODO Update UI after each file carved
                 }, {
                     Timber.e(it, "Error while carving data!")
                 }, {
                     // TODO  Update UI after carving complete
                 })
+    }
+
+    private fun saveToFile(list: List<Byte>, rule: Rule, dirForRule: File): String {
+        val carvedFileBytes = list.toByteArray()
+        val carvedFile = File(dirForRule, generateCarvedFileName(rule))
+        carvedFile.writeBytes(carvedFileBytes)
+        return carvedFile.absolutePath
     }
 
     private fun generateCarvedFileName(rule: Rule): String =
@@ -117,6 +174,6 @@ class CarveViewModel @Inject constructor(
     }
 
     fun fileClicked() {
-        TODO("not implemented")
+        // TODO Open file using appropriate MIME Types
     }
 }
