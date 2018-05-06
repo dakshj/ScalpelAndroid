@@ -33,7 +33,7 @@ abstract class RuleDao : BaseDao<Rule> {
                 Rule(
                         extension = "jpg",
                         maxBytesAmount = 200000000,
-                        header = "\\xff\\xd8",
+                        header = "\\xff\\xd8\\xff\\xe1",
                         footer = "\\xff\\xd9"
                 ),
                 Rule(
@@ -64,7 +64,7 @@ abstract class RuleDao : BaseDao<Rule> {
                         extension = "pdf",
                         maxBytesAmount = 5000000,
                         header = "%PDF",
-                        footer = "%EOF\\x0d"
+                        footer = "%EOF\\x0a"
                 )
         )
     }
