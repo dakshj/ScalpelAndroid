@@ -8,6 +8,7 @@ import com.daksh.scalpelandroid.storage.prefs.AppSettings
 import com.daksh.scalpelandroid.storage.room.dao.RuleDao
 import com.daksh.scalpelandroid.storage.room.entity.Rule
 import io.reactivex.Single
+import io.reactivex.rxkotlin.toFlowable
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
@@ -21,16 +22,17 @@ class CarveViewModel @Inject constructor(
         private val directoryManager: DirectoryManager
 ) : RxAwareViewModel() {
 
-    val liveSelectedFilePath: MutableLiveData<String> = MutableLiveData()
+    val liveSelectedSourceFilePath: MutableLiveData<String> = MutableLiveData()
     val liveCarving: MutableLiveData<Boolean> = MutableLiveData()
+    val liveCarvedFiles: MutableLiveData<List<String>> = MutableLiveData()
 
     init {
-        liveSelectedFilePath.value = appSettings.selectedFile
+        liveSelectedSourceFilePath.value = appSettings.selectedSourceFile
     }
 
     var selectedFile: File?
         get() {
-            appSettings.selectedFile?.let {
+            appSettings.selectedSourceFile?.let {
                 return File(it)
             }
 
@@ -38,20 +40,22 @@ class CarveViewModel @Inject constructor(
         }
         set(file) {
             file?.run { if (this.exists()) this else null }?.absolutePath?.let {
-                appSettings.selectedFile = it
-                liveSelectedFilePath.value = it
+                appSettings.selectedSourceFile = it
+                liveSelectedSourceFilePath.value = it
             }
         }
 
     fun carve() {
+        val allCarvedFiles = mutableListOf<String>()
+
         liveCarving.value = true
 
-        lateinit var fileBytes: ByteArray
+        lateinit var sourceFileBytes: ByteArray
 
         val currentRunDirectory = directoryManager.getCurrentRunDirectory()
 
-        readFileToCarve()
-                .doOnSuccess { fileBytes = it }
+        readSourceFile()
+                .doOnSuccess { sourceFileBytes = it }
 
                 .observeOn(RxSchedulers.database)
                 .flatMap { Single.fromCallable { ruleDao.getAll() } }
@@ -59,21 +63,27 @@ class CarveViewModel @Inject constructor(
                 .flatMapIterable { it }
                 .parallel()
                 .runOn(RxSchedulers.disk)
-                .map {
-                    val carvedFile: ByteArray = ByteArray(1)
+                .flatMap {
+                    val dirForRule = directoryManager.getDirectoryForRule(it, currentRunDirectory)
+                    val carvedFiles = mutableListOf<String>()
 
-                    // TODO Actually carve the file here
+                    // TODO Check if sourceFileBytes has been set properly or not
+                    // TODO Carve files in sourceFileBytes
 
-                    it to carvedFile
+                    // For each found file:
+                    val carvedFileBytes = ByteArray(1)
+                    val carvedFile = File(dirForRule, generateCarvedFileName(it))
+                    carvedFile.writeBytes(carvedFileBytes)
+                    carvedFiles.add(carvedFile.absolutePath)
+                    //
+
+                    carvedFiles.toFlowable()
                 }
                 .sequential()
+                .observeOn(RxSchedulers.main)
                 .subscribe({
-                    val dirForRule = directoryManager
-                            .getDirectoryForRule(it.first, currentRunDirectory)
-
-                    val carvedFile = File(dirForRule, generateCarvedFileName(it.first))
-                    carvedFile.writeBytes(it.second)
-
+                    allCarvedFiles.add(it)
+                    liveCarvedFiles.value = allCarvedFiles
                     // TODO Update UI after each file carved
                 }, {
                     Timber.e(it, "Error while carving data!")
@@ -85,7 +95,7 @@ class CarveViewModel @Inject constructor(
     private fun generateCarvedFileName(rule: Rule): String =
             "${LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}.${rule.extension}"
 
-    private fun readFileToCarve(): Single<ByteArray> {
+    private fun readSourceFile(): Single<ByteArray> {
         return Single.create<ByteArray> {
             if (selectedFile == null) {
                 it.onError(IllegalArgumentException("Please select a file!"))
@@ -104,5 +114,9 @@ class CarveViewModel @Inject constructor(
 
     fun cancelCarving() {
         liveCarving.value = false
+    }
+
+    fun fileClicked() {
+        TODO("not implemented")
     }
 }

@@ -1,5 +1,5 @@
 <resources>
 
-    <string name="prefs_key_selected_file">selected_file</string>
+    <string name="prefs_key_selected_source_file">selected_source_file</string>
 
 </resources>

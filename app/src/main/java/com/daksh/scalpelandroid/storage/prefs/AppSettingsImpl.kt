@@ -12,12 +12,12 @@ class AppSettingsImpl(private val context: Context) : AppSettings {
 
     private fun getString(resId: Int): String = context.getString(resId)
 
-    override var selectedFile: String?
-        get() = prefs.getString(getString(R.string.prefs_key_selected_file), null)
+    override var selectedSourceFile: String?
+        get() = prefs.getString(getString(R.string.prefs_key_selected_source_file), null)
         set(value) {
             value?.let {
                 prefs.edit {
-                    putString(getString(R.string.prefs_key_selected_file), it)
+                    putString(getString(R.string.prefs_key_selected_source_file), it)
                 }
             }
         }

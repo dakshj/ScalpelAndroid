@@ -36,6 +36,8 @@ class CarveActivity : BaseActivity() {
 
     private lateinit var snackBarCarving: Snackbar
 
+    private lateinit var listAdapter: CarvedFilesListAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(CarveViewModel::class.java)
@@ -66,7 +68,7 @@ class CarveActivity : BaseActivity() {
     }
 
     private fun setUpLiveDataObservers() {
-        viewModel.liveSelectedFilePath.observeK(this) {
+        viewModel.liveSelectedSourceFilePath.observeK(this) {
             it?.let { textSelectedFile.text = it }
         }
 
@@ -80,6 +82,12 @@ class CarveActivity : BaseActivity() {
                 } else {
                     snackBarCarving.dismiss()
                 }
+            }
+        }
+
+        viewModel.liveCarvedFiles.observeK(this) {
+            it?.let {
+                listAdapter.updateList(it)
             }
         }
     }
