@@ -12,8 +12,6 @@ fun String.toScalpelBytes(): List<Byte> {
             // Confirm if the next char after the backslash is an 'x'
             .filter { this[it + 1] == 'x' }
 
-            .toList()
-
     val result = mutableListOf<Byte>()
 
     var i = 0
