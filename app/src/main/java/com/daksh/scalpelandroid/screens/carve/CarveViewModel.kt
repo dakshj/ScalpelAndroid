@@ -115,12 +115,12 @@ class CarveViewModel @Inject constructor(
                                     // List<Byte> as a file
                                     .filter {
                                         if (footerBytes == null) {
-                                            // TODO Do this only if we get the `-b` flag
-
-                                            // Save the file and skip it from going into
-                                            // `possibleCarves`
-                                            saveToFile(it, rule, dirForRule).let {
-                                                carvedFiles.add(it)
+                                            if (rule.forceSave) {
+                                                // Save the file and skip it from going into
+                                                // `possibleCarves`
+                                                saveToFile(it, rule, dirForRule).let {
+                                                    carvedFiles.add(it)
+                                                }
                                             }
 
                                             false
@@ -186,11 +186,11 @@ class CarveViewModel @Inject constructor(
                                 .run {
                                     // If the list of carves is empty
                                     if (this.isEmpty()) {
-                                        // TODO Do this only if we get the `-b` flag
-
-                                        // Save the entire carving
-                                        saveToFile(currCarve, rule, dirForRule).let {
-                                            carvedFiles.add(it)
+                                        if (rule.forceSave) {
+                                            // Save the entire carving
+                                            saveToFile(currCarve, rule, dirForRule).let {
+                                                carvedFiles.add(it)
+                                            }
                                         }
                                     }
                                 }

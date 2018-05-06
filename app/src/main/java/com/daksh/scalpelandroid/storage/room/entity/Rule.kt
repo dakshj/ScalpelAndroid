@@ -23,7 +23,12 @@ data class Rule(
 
         val reverseSearchFooter: Boolean = false,
 
-        val skipFooter: Boolean = false
+        val skipFooter: Boolean = false,
+
+        /**
+         * Saves the carving even if a footer match was not found
+         */
+        val forceSave: Boolean = false
 ) {
     companion object {
         const val WILDCARD: Char = '?'
