@@ -5,5 +5,6 @@
     <string name="carve">Carve!</string>
     <string name="carving">Carving…</string>
     <string name="cancel">Cancel</string>
+    <string name="select_a_file">Select a file</string>
 
 </resources>

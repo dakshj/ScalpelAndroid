@@ -98,6 +98,7 @@ dependencies {
 
     // Utils
     implementation "com.jakewharton.threetenabp:threetenabp:${versions.threetenabp}"
+    implementation "com.karumi:dexter:${versions.dexter}"
 
     // Unit Testing
     testImplementation "junit:junit:${versions.junit}"

@@ -23,19 +23,20 @@ buildscript {
             'room'             : '1.0.0',
 
             // RxJava
-            'rxjava'           : '2.1.6',
-            'rxkotlin'         : '2.0.0',
+            'rxjava'           : '2.1.13',
+            'rxkotlin'         : '2.2.0',
             'rxandroid'        : '2.0.2',
-            'rxbinding'        : '2.1.0',
+            'rxbinding'        : '2.1.1',
 
             // Dependency Injection
-            'dagger'           : '2.15',
+            'dagger'           : '2.16',
 
             // Logging
             'timber'           : '4.7.0',
 
             // Utils
             'threetenabp'      : '1.1.0',
+            'dexter'           : '4.2.0',
 
             // Testing
             'junit'            : '4.12',

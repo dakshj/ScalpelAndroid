@@ -2,7 +2,6 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="8dp">
@@ -12,12 +11,12 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:gravity="center_vertical"
+        android:hint="@string/select_a_file"
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="@id/buttonSelectFile"
         app:layout_constraintEnd_toStartOf="@id/buttonSelectFile"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="/sdcard/test.txt"/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <Button
         android:id="@+id/buttonSelectFile"
