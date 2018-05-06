@@ -92,33 +92,43 @@ class CarveViewModel @Inject constructor(
                     val headerBytes = rule.header.toScalpelBytes()
                     val footerBytes = rule.footer?.toScalpelBytes()
 
-                    val possibleCarves = (0 until sourceFileBytes.size - headerBytes.size)
-                            .filter {
-                                sourceFileBytes.subList(it, it + headerBytes.size)
-                                        .matchWithWildCard(headerBytes)
-                            }
+                    val possibleCarves =
+                    // Iterate over all start indices of each window
+                            (0..sourceFileBytes.size - headerBytes.size)
 
-                            // Get List of Bytes from Header to max bytes amount
-                            .map {
-                                // Prevent overflow by choosing min of max bytes, or the end of the
-                                // byte stream
-                                val end = minOf(it + rule.maxBytesAmount, sourceFileBytes.size)
-                                sourceFileBytes.subList(it, end)
-                            }
-
-                            // If footer bytes are null, then save the entire List<Byte> as a file
-                            .filter {
-                                if (footerBytes == null) {
-                                    // TODO Do this only if we get the -b flag
-                                    saveToFile(it, rule, dirForRule).let {
-                                        carvedFiles.add(it)
+                                    // Filter those windows which match header bytes
+                                    .filter {
+                                        sourceFileBytes.subList(it, it + headerBytes.size)
+                                                .matchWithWildCard(headerBytes)
                                     }
 
-                                    false
-                                } else {
-                                    true
-                                }
-                            }
+                                    // Get Bytes from Header to max bytes amount
+                                    .map {
+                                        // Prevent overflow by choosing min of max bytes,
+                                        // or the end of the byte stream
+                                        val end = minOf(it + rule.maxBytesAmount,
+                                                sourceFileBytes.size)
+                                        sourceFileBytes.subList(it, end)
+                                    }
+
+                                    // If footer bytes are null, then save the entire
+                                    // List<Byte> as a file
+                                    .filter {
+                                        if (footerBytes == null) {
+                                            // TODO Do this only if we get the `-b` flag
+
+                                            // Save the file and skip it from going into
+                                            // `possibleCarves`
+                                            saveToFile(it, rule, dirForRule).let {
+                                                carvedFiles.add(it)
+                                            }
+
+                                            false
+                                        } else {
+                                            // Put this carving into `possibleCarves`
+                                            true
+                                        }
+                                    }
 
                     // If footer bytes are non-null:
 
@@ -132,7 +142,7 @@ class CarveViewModel @Inject constructor(
                                     0
                                 }
 
-                        (footerStartIndex until currCarve.size - footerBytes!!.size)
+                        (footerStartIndex..currCarve.size - footerBytes!!.size)
                                 .filter {
                                     currCarve.subList(it, it + footerBytes.size)
                                             .matchWithWildCard(footerBytes)
@@ -147,49 +157,76 @@ class CarveViewModel @Inject constructor(
                                     }
                                 }
 
-                                // Ensure a minimum carve size
-                                .filter {
-                                    val carveSize = if (rule.skipFooter) {
+                                // Map carve size (since index is not required anymore)
+                                .map {
+                                    if (rule.skipFooter) {
                                         it
                                     } else {
                                         it + footerBytes.size
                                     }
+                                }
 
-                                    carveSize >= rule.minBytesAmount
+                                // Ensure a minimum carve size
+                                .filter {
+                                    it >= rule.minBytesAmount
+                                }
+
+                                // Map to bytes carved from starting to carve size
+                                .map {
+                                    currCarve.subList(0, it)
+                                }
+
+                                // Save carves for each found footer
+                                .onEach {
+                                    saveToFile(it, rule, dirForRule).let {
+                                        carvedFiles.add(it)
+                                    }
                                 }
 
                                 .run {
-                                    val carveToSave =
-                                            if (this.isEmpty()) {
-                                                currCarve
-                                            } else {
-                                                if (rule.skipFooter) {
-                                                    currCarve.subList(0, footerStartIndex)
-                                                } else {
-                                                    currCarve.subList(0,
-                                                            footerStartIndex + footerBytes.size)
-                                                }
-                                            }
+                                    // If the list of carves is empty
+                                    if (this.isEmpty()) {
+                                        // TODO Do this only if we get the `-b` flag
 
-                                    saveToFile(carveToSave, rule, dirForRule).let {
-                                        carvedFiles.add(it)
+                                        // Save the entire carving
+                                        saveToFile(currCarve, rule, dirForRule).let {
+                                            carvedFiles.add(it)
+                                        }
                                     }
                                 }
                     }
 
+                    // Return Flowable of carved Files, which continues the Rx chain
                     carvedFiles.toFlowable()
                 }
+
+                // Bring back to Flowable (from ParallelFlowable)
                 .sequential()
+
                 .observeOn(RxSchedulers.main)
+
+                // Carving over -- update UI
                 .doFinally { liveCarving.value = false }
-                .subscribe({
-                    allCarvedFiles.add(it)
-                    liveCarvedFiles.value = allCarvedFiles
-                }, {
-                    singleLiveMessage.value = "Error while carving data!"
-                }, {
-                    singleLiveMessage.value = "Completed carving!"
-                })
+
+                .subscribe(
+                        // onNext
+                        {
+                            allCarvedFiles.add(it)
+                            liveCarvedFiles.value = allCarvedFiles
+                        },
+
+                        // onError
+                        {
+                            singleLiveMessage.value = "Error while carving data!"
+                        },
+
+                        // onComplete
+                        {
+                            singleLiveMessage.value = "Completed carving!"
+                        }
+                )
+
+                // Dispose it
                 .let { disposables += it }
     }
 
