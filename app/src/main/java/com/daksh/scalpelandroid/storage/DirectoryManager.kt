@@ -1,6 +1,7 @@
 package com.daksh.scalpelandroid.storage
 
 import android.content.Context
+import android.os.Environment
 import com.daksh.scalpelandroid.R
 import com.daksh.scalpelandroid.storage.room.entity.Rule
 import org.threeten.bp.LocalDateTime
@@ -15,7 +16,8 @@ class DirectoryManager @Inject constructor(
 ) {
 
     private fun getRootDirectory(): File {
-        val rootDir = File(context.filesDir, context.getString(R.string.app_name))
+        val rootDir = File(Environment.getExternalStorageDirectory(),
+                context.getString(R.string.app_name))
 
         if (!rootDir.exists()) {
             rootDir.mkdirs()
