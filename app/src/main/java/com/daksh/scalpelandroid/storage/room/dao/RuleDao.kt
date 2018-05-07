@@ -65,6 +65,81 @@ abstract class RuleDao : BaseDao<Rule> {
                         maxBytesAmount = 20 * 1024 * 1024, // 20 MB
                         header = "%PDF",
                         footer = "%EOF\\x0a"
+                ),
+                Rule(
+                        extension = "png",
+                        maxBytesAmount = 20 * 1024 * 1024, // 20 MB
+                        header = "\\x89\\x50\\x4E\\x47\\x0D\\x0A\\x1A\\x0A",
+                        footer = "\\x49\\x45\\x4E\\x44\\xAE\\x42\\x60\\x82"
+                ),
+                Rule(
+                        extension = "tif",
+                        maxBytesAmount = 40 * 1024 * 1024, // 40 MB
+                        header = "\\x49\\x49\\x2a\\x00",
+                        forceSave = true
+                ),
+                Rule(
+                        extension = "tif",
+                        maxBytesAmount = 40 * 1024 * 1024, // 40 MB
+                        header = "\\x4D\\x4D\\x00\\x2A",
+                        forceSave = true
+                ),
+
+                // Microsoft Office Open XML format: DOCX, PPTX, XLSX
+                // Can't say which file directly by carving it
+                Rule(
+                        extension = "ooxml",
+                        maxBytesAmount = 200 * 1024 * 1024, // 200 MB
+                        header = "\\x50\\x4B\\x03\\x04\\x14\\x00\\x06\\x00",
+                        footer = "\\x50\\x4B\\x05\\x06??????????????????"
+                ),
+
+                Rule(
+                        extension = "doc",
+                        maxBytesAmount = 200 * 1024 * 1024, // 200 MB
+                        header = "\\xd0\\xcf\\x11\\xe0\\xa1\\xb1\\x1a\\xe1\\x00\\x00",
+                        footer = "\\xd0\\xcf\\x11\\xe0\\xa1\\xb1\\x1a\\xe1\\x00\\x00",
+                        skipFooter = true
+                ),
+
+                Rule(
+                        extension = "doc",
+                        maxBytesAmount = 200 * 1024 * 1024, // 200 MB
+                        header = "\\xd0\\xcf\\x11\\xe0\\xa1\\xb1\\x1a\\xe1\\x00\\x00"
+                ),
+
+                Rule(
+                        extension = "zip",
+                        maxBytesAmount = 200 * 1024 * 1024, // 200 MB
+                        header = "PK\\x03\\x04",
+                        footer = "\\x3c\\xac"
+                ),
+
+                Rule(
+                        extension = "java",
+                        maxBytesAmount = 5 * 1024 * 1024, // 5 MB
+                        header = "\\xca\\xfe\\xba\\xbe"
+                ),
+
+                Rule(
+                        extension = "mpg",
+                        maxBytesAmount = 200 * 1024 * 1024, // 200 MB
+                        header = "\\x00\\x00\\x01\\xba",
+                        footer = "\\x00\\x00\\x01\\xb9"
+                ),
+
+                Rule(
+                        extension = "mpg",
+                        maxBytesAmount = 200 * 1024 * 1024, // 200 MB
+                        header = "\\x00\\x00\\x01\\xb3",
+                        footer = "\\x00\\x00\\x01\\xb7"
+                ),
+
+                Rule(
+                        extension = "rtf",
+                        maxBytesAmount = 200 * 1024 * 1024, // 200 MB
+                        header = "\\x7B\\x5C\\x72\\x74\\x66\\x31",
+                        footer = "\\x5C\\x70\\x61\\x72\\x20\\x7D\\x7D"
                 )
         )
     }
