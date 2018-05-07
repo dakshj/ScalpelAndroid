@@ -53,6 +53,13 @@ class CarveActivity : BaseActivity() {
                     .withActivity(this)
                     .withRequestCode(REQUEST_CODE_FILE_PICKER)
                     .withHiddenFiles(true)
+
+                    // Set start directory if a file has already been chosen
+                    .apply {
+                        viewModel.selectedFile?.let {
+                            withPath(it.parentFile.absolutePath)
+                        }
+                    }
                     .start()
         }
 
@@ -117,11 +124,13 @@ class CarveActivity : BaseActivity() {
                 .check()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == REQUEST_CODE_FILE_PICKER && resultCode == Activity.RESULT_OK) {
-            viewModel.selectedFile = File(data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH))
+        data?.let {
+            if (requestCode == REQUEST_CODE_FILE_PICKER && resultCode == Activity.RESULT_OK) {
+                viewModel.selectedFile = File(it.getStringExtra(FilePickerActivity.RESULT_FILE_PATH))
+            }
         }
     }
 }
