@@ -3,7 +3,7 @@
 An Android app written natively in Kotlin, inspired by [Scalpel](https://github.com/sleuthkit/scalpel/) and [Foremost](http://foremost.sourceforge.net/). This app picks a source file to carve from, and carves files of the formats mentioned below within it, in parallel using `RxJava`. This is a project for the [UMass CICS CS590F Spring 2018 course](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/).
 
 ## Supported File Formats
-JPG, PNG, DOC, PDF, GIF, HTML, TIF, DOCX, PPTX, XLSX, DOC, ZIP, JAVA, MPG, and RTF.
+JPG, PNG, DOC, PDF, GIF, HTML, TIF, DOCX, PPTX, XLSX, DOC, PPT, XLS, ZIP, JAVA, MPG, and RTF.
 
 ## Optimizations Performed
 * Usage of [RxJava](https://github.com/ReactiveX/RxJava)'s
@@ -90,7 +90,9 @@ sdcard
 ## References for Building the App's Rules Batabase
 * [Scalpel's configuration file](https://github.com/sleuthkit/scalpel/blob/master/scalpel.conf).
 * [Foremost's configuration file](http://foremost.sourceforge.net/pkg/foremost-1.5.7.tar.gz) (Scalpel's configuration almost same as this).
-* 
+* [Data Doctor: Headers and footers of some important file types](http://www.datadoctor.biz/data_recovery_programming_book_chapter14-page2.html)
+* [Data Carving Concepts](https://www.sans.org/reading-room/whitepapers/forensics/data-carving-concepts-32969)
+* [File Signatures Table](https://www.garykessler.net/library/file_sigs.html)
 
 ## Future Work
 * Build a screen for adding / editing / deleting rules, as well as enabling / disabling them.
