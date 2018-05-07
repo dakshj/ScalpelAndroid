@@ -109,10 +109,35 @@ abstract class RuleDao : BaseDao<Rule> {
                 ),
 
                 Rule(
+                        extension = "xls",
+                        maxBytesAmount = 200 * 1024 * 1024, // 200 MB
+                        header = "\\xD0\\xCF\\x11\\xE0\\xA1\\xB1\\x1A\\xE1",
+                        footer = "\\xFE\\xFF\\xFF\\xFF\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00" +
+                                "\\x57\\x00\\x6F\\x00\\x72\\x00\\x6B\\x00\\x62\\x00\\x6F\\x00" +
+                                "\\x6F\\x00\\x6B\\x00"
+                ),
+
+                Rule(
+                        extension = "ppt",
+                        maxBytesAmount = 200 * 1024 * 1024, // 200 MB
+                        header = "\\xD0\\xCF\\x11\\xE0\\xA1\\xB1\\x1A\\xE1",
+                        footer = "\\x50\\x00\\x6F\\x00\\x77\\x00\\x65\\x00\\x72\\x00\\x50\\x00" +
+                                "\\x6F\\x00\\x69\\x00\\x6E\\x00\\x74\\x00\\x20\\x00\\x44\\x00" +
+                                "\\x6F\\x00\\x63\\x00\\x75\\x00\\x6D\\x00\\x65\\x00\\x6E\\x00\\x74"
+                ),
+
+                Rule(
                         extension = "zip",
                         maxBytesAmount = 200 * 1024 * 1024, // 200 MB
                         header = "PK\\x03\\x04",
                         footer = "\\x3c\\xac"
+                ),
+
+                Rule(
+                        extension = "zip",
+                        maxBytesAmount = 200 * 1024 * 1024, // 200 MB
+                        header = "PK\\x03\\x04\\x14",
+                        footer = "\\x50\\x4B\\x05\\x06\\x00"
                 ),
 
                 Rule(
