@@ -16,4 +16,5 @@ to parallelize on-disk reading.
 ## Explanation of Code
 * Each rule is stored in a local SQLite database table, via the Android ORM library called as
 (Room)[https://developer.android.com/topic/libraries/architecture/room].
-* Rules have been statically defined in the source code here, since it was not feasible to design a UI for input / editing / disabling rules given the time frame.
+* Rules have been statically defined (in the source code here)[/app/src/main/java/com/daksh/scalpelandroid/storage/room/dao/RuleDao.kt#L32], since it was not feasible to design a UI for input / editing / disabling rules given the time frame.
+* 
