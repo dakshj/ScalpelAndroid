@@ -67,7 +67,7 @@ Install [Android Studio 3.1 or above](https://developer.android.com/studio/) and
 * You can test out the app yourself by [installing the APK file from here](https://github.com/dakshj/ScalpelAndroid/releases/tag/1.0).
 
 ## Location of Carved Files on Android Device's Storage
-All carve "runs" are stored in separate folders within the `ScalpelAndroid` folder within the root directory of the storage media. Within each run folder, carved files are stored into separate folders based on their file extension.
+All carve "runs" are stored in separate folders (named on the current timestamp of when the run was started) within the `ScalpelAndroid` folder within the root directory of the storage media. Within each run folder, carved files are stored into separate folders based on their file extension.
 
 Example layout:
 ```
