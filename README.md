@@ -23,6 +23,12 @@ to parallelize on-disk reading.
 * The ViewModel to control `CarveActivity` is [located in `CarveViewModel`](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt).
 * The UI for `CarveActivity` is [defined here](app/src/main/res/layout/carve_activity.xml).
 * All files for [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) via [Google's Dagger 2](https://github.com/google/dagger) are located [in this package](app/src/main/java/com/daksh/scalpelandroid/inject).
+* [`CarvedFilesDiffUtilCallback`](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarvedFilesDiffUtilCallback.kt) is a RecylerView callback class that compares and old and a new list, and updates the list UI accordingly based on additions / changes / deletions.
+* [`CarvedFilesListAdapter`](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarvedFilesListAdapter.kt) controls the list on `CarveActivity`.
+* Each click on a row item of the list on `CarveActivity` [opens any file in an external app installed on the phone using this code](app/src/main/java/com/daksh/scalpelandroid/storage/FileOpener.kt#L13). The MIME Type of the file is [determined here](app/src/main/java/com/daksh/scalpelandroid/storage/FileOpener.kt#L26).
+* The challenge for opening our own app's files in an external browser on Android SDK >= 24 (i.e., Nougat (7.0) or more recent) was to implement a [FileProvider](https://developer.android.com/reference/android/support/v4/content/FileProvider), since now on, apps cannot give other apps access to arbitrary files.
+* To read / write to the app's storage, Android >= 5.0 requires [requesting runtime permissions to the user](https://developer.android.com/training/permissions/requesting). This was done by utilizing the [Dexter Android library](https://github.com/Karumi/Dexter) which makes it easier.
+* To pick a source file to carve, the [MaterialFilePicker Android library](https://github.com/nbsp-team/MaterialFilePicker) was used.
 * 
 
 ## Carving Process
