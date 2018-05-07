@@ -51,8 +51,8 @@ to parallelize on-disk reading.
   * If there were [no footer matches](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L185), but at least one header match, then each of those header-to-max-carve-size byte arrays are saved to disk, depending on [if `forceSave` for that rule is `true`](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L186).
   * Each created file is [appended to a List](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L211), and that List is used to [update the UI](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L212).
   
-## Building the Project
-Install [Android Studio 3.1 or above](https://developer.android.com/studio/) and clone this repository.
+## Building and Running the Project
+Install [Android Studio 3.1 or above](https://developer.android.com/studio/) and clone this repository. After the initial Gradle sync completes, use the run options from the `Run` menu to launch the app on either an emulator or a connected Android device.
 
 ## Testing the Project
 * I have written Unit Tests for the core byte-related functions for [converting a Scalpel-formatted String to a List of Bytes](app/src/test/java/com/daksh/scalpelandroid/extensions/StringToScalpelBytesTest.kt#L8), and for [matching wildcards against a target Byte array](app/src/test/java/com/daksh/scalpelandroid/extensions/MatchWildCardTest.kt#L8)
