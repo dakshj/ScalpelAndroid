@@ -2,6 +2,15 @@
 
 An Android app written natively in Kotlin, inspired by [Scalpel](https://github.com/sleuthkit/scalpel/) and [Foremost](http://foremost.sourceforge.net/). This app picks a source file to carve from, and carves files of the formats mentioned below within it, in parallel using `RxJava`. This is a project for the [UMass CICS CS590F Spring 2018 course](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/).
 
+## Screenshots
+<img src="screenshots/1.jpg" width="200">|<img src="screenshots/2.jpg" width="200">|<img src="screenshots/3.jpg" width="200">
+:---:|:---:|:---:
+1\. Initial screen|2. Selecting `Designs.doc` for carving|3. Data carving started
+<img src="screenshots/4.jpg" width="200">|<img src="screenshots/5.jpg" width="200">|<img src="screenshots/6.jpg" width="200">
+4\. Showing intermediate `TIF` and `JPG` results while carving is going on|5. Clicking on a row opens that file in any other file viewers installed on the phone|6. A `Snackbar` showing "Carving completed!"
+<img src="screenshots/7.jpg" width="200">|<img src="screenshots/8.jpg" width="200">|<img src="screenshots/9.jpg" width="200">
+7\. A cute bunny has been carved|8. Carving results of `PDF` files shown for `L0_Documents.dd`|9. Valid carved PDF opened by an external PDF viewer
+
 ## Supported File Formats
 JPG, PNG, DOC, PDF, GIF, HTML, TIF, DOCX, PPTX, XLSX, DOC, PPT, XLS, ZIP, JAVA, MPG, and RTF.
 
