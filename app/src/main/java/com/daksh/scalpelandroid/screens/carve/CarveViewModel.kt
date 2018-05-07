@@ -219,7 +219,7 @@ class CarveViewModel @Inject constructor(
 
                         // onComplete
                         {
-                            singleLiveMessage.value = "Completed carving!"
+                            singleLiveMessage.value = "Carving completed!"
                         }
                 )
 
