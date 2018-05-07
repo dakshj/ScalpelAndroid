@@ -62,7 +62,8 @@ Install [Android Studio 3.1 or above](https://developer.android.com/studio/) and
   * [`Designs.doc`](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/files/Designs.doc) picked from [UMass CICS Spring 2018 CS590F's Assignment 5](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/assignments/05-jpeg-and-exif/).
   * `image.ntfs` and `simple.ntfs` picked from [UMass CICS Spring 2018 CS590F's Assignment 10](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/assignments/10-istat-ntfs/).
 * Two test videos showing the app are below:
-    TODO
+  * [Carve Designs.doc.mp4](https://drive.google.com/file/d/1nXAzAJSJCJAPQw5OQtc6rMII3awScH-6/view?usp=sharing)
+  * [Carve L0_Documents.dd](TODO)
 * You can test out the app yourself by [installing the APK file from here](https://github.com/dakshj/ScalpelAndroid/releases/tag/1.0).
 
 ## Location of Carved Files on Android Device's Storage
