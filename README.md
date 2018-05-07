@@ -64,3 +64,34 @@ Install [Android Studio 3.1 or above](https://developer.android.com/studio/) and
 * Two test videos showing the app are below:
     TODO
 * You can test out the app yourself by [installing the APK file from here](https://github.com/dakshj/ScalpelAndroid/releases/tag/1.0).
+
+## Location of Carved Files on Android Device's Storage
+All carve "runs" are stored in separate folders within the `ScalpelAndroid` folder within the root directory of the storage media. Within each run folder, carved files are stored into separate folders based on their file extension.
+
+Example layout:
+```
+sdcard
+  |
+  |_____ ScalpelAndroid
+                |
+                |_____ 2018-05-06T18:28:14.925
+                                  |
+                                  |_____ doc
+                                  |
+                                  |_____ gif
+                                  |
+                                  |_____ html
+                                  .
+                                  .
+                                  .
+```
+
+## References for Building the App's Rules Batabase
+* [Scalpel's configuration file](https://github.com/sleuthkit/scalpel/blob/master/scalpel.conf).
+* [Foremost's configuration file](http://foremost.sourceforge.net/pkg/foremost-1.5.7.tar.gz) (Scalpel's configuration almost same as this).
+* 
+
+## Future Work
+* Build a screen for adding / editing / deleting rules, as well as enabling / disabling them.
+* Add instrumentation tests along with adding test assets to this repo.
+* Implement individual carving functions based on a file type, similar to how it is done in [Foremost](http://foremost.sourceforge.net/).
