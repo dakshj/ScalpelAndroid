@@ -1,6 +1,6 @@
 # ScalpelAndroid
 
-Inspired from [Scalpel](https://github.com/sleuthkit/scalpel/).
+An Android app written natively in Kotlin, inspired from [Scalpel](https://github.com/sleuthkit/scalpel/). This app picks a source file to carve from, and carves files of the formats mentioned below within it, in parallel using `RxJava`.
 
 ## Supported File Formats
 JPG, PNG, DOC, PDF, GIF, HTML, TIF, DOCX, PPTX, XLSX, DOC, ZIP, JAVA, MPG, and RTF.
@@ -29,7 +29,10 @@ to parallelize on-disk reading.
 * The challenge for opening our own app's files in an external browser on Android SDK >= 24 (i.e., Nougat (7.0) or more recent) was to implement a [FileProvider](https://developer.android.com/reference/android/support/v4/content/FileProvider), since now on, apps cannot give other apps access to arbitrary files.
 * To read / write to the app's storage, Android >= 5.0 requires [requesting runtime permissions to the user](https://developer.android.com/training/permissions/requesting). This was done by utilizing the [Dexter Android library](https://github.com/Karumi/Dexter) which makes it easier.
 * To pick a source file to carve, the [MaterialFilePicker Android library](https://github.com/nbsp-team/MaterialFilePicker) was used.
-* 
+* The selected file is stored [within the app's SharedPreferences](https://developer.android.com/reference/android/content/SharedPreferences) using the code in [`AppSettingsImpl`](app/src/main/java/com/daksh/scalpelandroid/storage/prefs/AppSettingsImpl.kt).
+* All database and ORM related files are located [in this package](app/src/main/java/com/daksh/scalpelandroid/storage/room).
+* The directories used by the app to store the carved files are created using [the code in `DirectoryManager`](app/src/main/java/com/daksh/scalpelandroid/storage/DirectoryManager.kt).
+* The complete list of libraries and dependencies used in this project, is located in [the `app` module's build.gradle file here](app/build.gradle#L55).
 
 ## Carving Process
   * The app first [reads the source file's bytes](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L245) once in the background.
@@ -47,3 +50,17 @@ to parallelize on-disk reading.
   * After matching of the header and footer, each filtered-out [piece of bytes is saved to disk](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L178).
   * If there were [no footer matches](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L185), but at least one header match, then each of those header-to-max-carve-size byte arrays are saved to disk, depending on [if `forceSave` for that rule is `true`](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L186).
   * Each created file is [appended to a List](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L211), and that List is used to [update the UI](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L212).
+  
+## Building the Project
+Install [Android Studio 3.1 or above](https://developer.android.com/studio/) and clone this repository.
+
+## Testing the Project
+* I have written Unit Tests for the core byte-related functions for [converting a Scalpel-formatted String to a List of Bytes](app/src/test/java/com/daksh/scalpelandroid/extensions/StringToScalpelBytesTest.kt#L8), and for [matching wildcards against a target Byte array](app/src/test/java/com/daksh/scalpelandroid/extensions/MatchWildCardTest.kt#L8)
+* Further testing is only possible using [Instrumentation Testing on an Android device](https://developer.android.com/training/testing/unit-testing/instrumented-unit-tests); but that requires a significant amount of time, and I was not able to reach to it.
+* However, I have done manual tests using various documents and image files. The files I used are here:
+  * [`L0_Graphic.dd`](https://www.cfreds.nist.gov/FileCarving/Images/L0_Graphic.dd.bz2), [`L0_Documents.dd`](https://www.cfreds.nist.gov/FileCarving/Images/L0_Documents.dd.bz2), and [`L1_Documents.dd`](https://www.cfreds.nist.gov/FileCarving/Images/L1_Documents.dd.bz2) [located here](https://www.cfreds.nist.gov/FileCarving/index.html).
+  * [`Designs.doc`](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/files/Designs.doc) picked from [UMass CICS Spring 2018 CS590F's Assignment 5](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/assignments/05-jpeg-and-exif/).
+  * `image.ntfs` and `simple.ntfs` picked from [UMass CICS Spring 2018 CS590F's Assignment 10](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/assignments/10-istat-ntfs/).
+  * Two test videos showing the app are below:
+    TODO
+  * You can test out the app yourself by [installing the APK file from here](https://github.com/dakshj/ScalpelAndroid/releases/tag/1.0).
