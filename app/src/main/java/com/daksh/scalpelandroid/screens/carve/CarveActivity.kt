@@ -67,7 +67,7 @@ class CarveActivity : BaseActivity() {
             viewModel.cancelCarving()
         }
 
-        listAdapter = CarvedFilesListAdapter(viewModel = viewModel)
+        listAdapter = CarvedFilesListAdapter()
         listResults.adapter = listAdapter
     }
 

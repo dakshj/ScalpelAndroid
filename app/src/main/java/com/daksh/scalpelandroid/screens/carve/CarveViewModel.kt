@@ -271,8 +271,4 @@ class CarveViewModel @Inject constructor(
         // Update the UI
         liveCarving.value = false
     }
-
-    fun fileClicked() {
-        // TODO Open file using appropriate MIME Types
-    }
 }

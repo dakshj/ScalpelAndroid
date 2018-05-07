@@ -8,12 +8,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.daksh.scalpelandroid.R
 import com.daksh.scalpelandroid.extensions.round
+import com.daksh.scalpelandroid.storage.FileOpener
 import com.jakewharton.rxbinding2.view.clicks
 import java.io.File
 
 class CarvedFilesListAdapter(
-        private val list: MutableList<File> = mutableListOf(),
-        private val viewModel: CarveViewModel
+        private val list: MutableList<File> = mutableListOf()
 ) :
         RecyclerView.Adapter<CarvedFilesListAdapter.CarvedFilesViewHolder>() {
 
@@ -38,7 +38,7 @@ class CarvedFilesListAdapter(
                 (item.length().toDouble() / 1024).round(decimals = 3))
 
         holder.itemView.clicks().subscribe {
-            viewModel.fileClicked()
+            FileOpener.open(item, holder.itemView.context)
         }
     }
 
