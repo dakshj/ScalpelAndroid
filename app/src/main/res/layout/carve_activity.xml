@@ -42,6 +42,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrierSelectFile"/>
 
+    <TextView
+        android:id="@+id/textCarveResults"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/carve_results"
+        android:textAppearance="?android:textAppearanceLarge"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonCarve"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/listResults"
         android:layout_width="0dp"
@@ -51,7 +61,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buttonCarve"
+        app:layout_constraintTop_toBottomOf="@id/textCarveResults"
         tools:listitem="@layout/carved_files_list_item"/>
 
 </android.support.constraint.ConstraintLayout>
