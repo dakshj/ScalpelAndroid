@@ -25,3 +25,9 @@ to parallelize on-disk reading.
   * To match the header and footer, each possible window is checked.
   * Steps for matching the header:
     * Each window of the same size as `headerBytes` is [checked for matching](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L106) with the rule's header bytes, which may include wildcards.
+    * A [list of possible carvings is generated](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L115), based on the footer's presence and footer bytes.
+  * Steps for matching the footer:
+    * For [each appropriate window](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L142) for matching the footer, it is matched with the rule's [footer format](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L145) (which may include wildcards).
+    * The list of the filtered footer indices is [reversed if necessary](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L151), and mapped to the [target file's carve size](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L157) from the header's beginning offset.
+    * A [minimum carve size is ensured](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L168), and then mapped to a [Byte Array from 0 to that carve size](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L173).
+  * After matching of the header and footer, each filtered-out [piece of bytes is saved to disk](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L178).
