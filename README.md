@@ -1,6 +1,6 @@
 # ScalpelAndroid
 
-An Android app written natively in Kotlin, inspired from [Scalpel](https://github.com/sleuthkit/scalpel/). This app picks a source file to carve from, and carves files of the formats mentioned below within it, in parallel using `RxJava`. This is a project for the [UMass CICS CS590F Spring 2018 course](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/).
+An Android app written natively in Kotlin, inspired by [Scalpel](https://github.com/sleuthkit/scalpel/) and [Foremost](http://foremost.sourceforge.net/). This app picks a source file to carve from, and carves files of the formats mentioned below within it, in parallel using `RxJava`. This is a project for the [UMass CICS CS590F Spring 2018 course](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/).
 
 ## Supported File Formats
 JPG, PNG, DOC, PDF, GIF, HTML, TIF, DOCX, PPTX, XLSX, DOC, ZIP, JAVA, MPG, and RTF.
