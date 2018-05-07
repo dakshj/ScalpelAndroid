@@ -34,7 +34,7 @@ to parallelize on-disk reading.
 * The directories used by the app to store the carved files are created using [the code in `DirectoryManager`](app/src/main/java/com/daksh/scalpelandroid/storage/DirectoryManager.kt).
 * The complete list of libraries and dependencies used in this project, is located in [the `app` module's build.gradle file here](app/build.gradle#L55).
 
-## Carving Process
+## The Carving Process
   * The app first [reads the source file's bytes](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L245) once in the background.
   * Next, all rules are [read from RuleDao](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L84)
   * Processing for each rule [happens in parallel](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L89) on the disk background thread.
@@ -61,6 +61,6 @@ Install [Android Studio 3.1 or above](https://developer.android.com/studio/) and
   * [`L0_Graphic.dd`](https://www.cfreds.nist.gov/FileCarving/Images/L0_Graphic.dd.bz2), [`L0_Documents.dd`](https://www.cfreds.nist.gov/FileCarving/Images/L0_Documents.dd.bz2), and [`L1_Documents.dd`](https://www.cfreds.nist.gov/FileCarving/Images/L1_Documents.dd.bz2) [located here](https://www.cfreds.nist.gov/FileCarving/index.html).
   * [`Designs.doc`](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/files/Designs.doc) picked from [UMass CICS Spring 2018 CS590F's Assignment 5](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/assignments/05-jpeg-and-exif/).
   * `image.ntfs` and `simple.ntfs` picked from [UMass CICS Spring 2018 CS590F's Assignment 10](http://people.cs.umass.edu/~liberato/courses/2018-spring-compsci365+590f/assignments/10-istat-ntfs/).
-  * Two test videos showing the app are below:
+* Two test videos showing the app are below:
     TODO
-  * You can test out the app yourself by [installing the APK file from here](https://github.com/dakshj/ScalpelAndroid/releases/tag/1.0).
+* You can test out the app yourself by [installing the APK file from here](https://github.com/dakshj/ScalpelAndroid/releases/tag/1.0).
