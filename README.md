@@ -16,5 +16,12 @@ to parallelize on-disk reading.
 ## Explanation of Code
 * Each rule is stored in a local SQLite database table, via the Android ORM library called as
 [Room](https://developer.android.com/topic/libraries/architecture/room).
-* Rules have been statically defined [in the source code here](/app/src/main/java/com/daksh/scalpelandroid/storage/room/dao/RuleDao.kt#L32), since it was not feasible to design a UI for input / editing / disabling rules given the time frame.
-* 
+* Rules have been statically defined [in the source code here](app/src/main/java/com/daksh/scalpelandroid/storage/room/dao/RuleDao.kt#L32), since it was not feasible to design a UI for input / editing / disabling rules given the time frame.
+* The code for carving bytes from a source file [is here](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L65).
+  * It first [reads the source file's bytes](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L245) once in the background.
+  * Next, all rules are [read from RuleDao](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L84)
+  * Processing for each rule [happens in parallel](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L89) on the disk background thread.
+  * [This code converts header and footer bytes](app/src/main/java/com/daksh/scalpelandroid/extensions/StringExtensions.kt#L3) of each rule from their String encodings into a List of Bytes.
+  * To match the header and footer, each possible window is checked.
+  * Steps for matching the header:
+    * Each window of the same size as `headerBytes` is [checked for matching](app/src/main/java/com/daksh/scalpelandroid/screens/carve/CarveViewModel.kt#L106) with the rule's header bytes, which may include wildcards.
