@@ -61,12 +61,12 @@ class CarveActivity : BaseActivity() {
                         }
                     }
                     .start()
-        }
+        }.dispose()
 
         buttonCarve.clicks().subscribe {
             viewModel.carve()
             listAdapter.updateList(listOf())
-        }
+        }.dispose()
 
         snackBarCarving = Snackbar.make(listResults, getString(R.string.carving),
                 Snackbar.LENGTH_INDEFINITE)

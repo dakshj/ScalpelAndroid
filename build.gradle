@@ -3,12 +3,12 @@
 buildscript {
     ext.versions = [
             'gradle'           : '3.0.0',
-            'build_tools'      : '27.0.3',
-            'compile_sdk'      : '27',
-            'target_sdk'       : '27',
+            'build_tools'      : '28.0.3',
+            'compile_sdk'      : '28',
+            'target_sdk'       : '28',
 
             // Kotlin
-            'kotlin'           : '1.2.41',
+            'kotlin'           : '1.2.51',
             'android_ktx'      : '0.3',
 
             // Android
@@ -48,7 +48,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
 
         // NOTE: Do not place your application dependencies here; they belong
