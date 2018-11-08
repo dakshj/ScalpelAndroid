@@ -1,7 +1,7 @@
 package com.daksh.scalpelandroid.storage.room
 
-import android.arch.persistence.room.Database
-import android.arch.persistence.room.RoomDatabase
+import androidx.room.Database
+import androidx.room.RoomDatabase
 import com.daksh.scalpelandroid.storage.room.dao.RuleDao
 import com.daksh.scalpelandroid.storage.room.entity.Rule
 

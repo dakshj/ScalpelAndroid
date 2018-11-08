@@ -1,7 +1,7 @@
 package com.daksh.scalpelandroid.inject.module
 
-import android.arch.persistence.room.Room
 import android.content.Context
+import androidx.room.Room
 import com.daksh.scalpelandroid.storage.room.Database
 import dagger.Module
 import dagger.Provides

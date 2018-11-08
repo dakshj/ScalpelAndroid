@@ -1,6 +1,6 @@
 package com.daksh.scalpelandroid.screens.carve
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import com.daksh.scalpelandroid.extensions.matchWithWildCard
 import com.daksh.scalpelandroid.extensions.toScalpelBytes
 import com.daksh.scalpelandroid.livedata.SingleLiveEvent

@@ -1,8 +1,8 @@
 package com.daksh.scalpelandroid.storage.room.dao
 
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Update
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Update
 import io.reactivex.Flowable
 
 interface BaseDao<T> {

@@ -1,31 +1,35 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: "com.github.ben-manes.versions"
 
 buildscript {
     ext.versions = [
             'gradle'           : '3.0.0',
-            'build_tools'      : '27.0.3',
-            'compile_sdk'      : '27',
-            'target_sdk'       : '27',
+            'build_tools'      : '28.0.3',
+            'compile_sdk'      : '28',
+            'target_sdk'       : '28',
+            'min_sdk'          : '21',
+            'version_code'     : '1',
+            'version_name'     : '1.0',
 
             // Kotlin
-            'kotlin'           : '1.2.41',
-            'android_ktx'      : '0.3',
+            'kotlin'           : '1.2.71',
+            'android_ktx'      : '1.0.1',
 
             // Android
-            'support'          : '27.1.1',
-            'lifecycle'        : '1.1.1',
+            'appcompat'        : '1.0.2',
+            'lifecycle'        : '2.0.0',
 
             // UI
-            'constraint_layout': '1.1.0',
+            'constraint_layout': '1.1.2',
             'file_picker'      : '1.8',
 
             // Storage
-            'room'             : '1.0.0',
+            'room'             : '2.1.0-alpha02',
 
             // RxJava
-            'rxjava'           : '2.1.13',
-            'rxkotlin'         : '2.2.0',
-            'rxandroid'        : '2.0.2',
+            'rxjava'           : '2.2.3',
+            'rxkotlin'         : '2.3.0',
+            'rxandroid'        : '2.1.0',
             'rxbinding'        : '2.1.1',
 
             // Dependency Injection
@@ -48,8 +52,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.20.0"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

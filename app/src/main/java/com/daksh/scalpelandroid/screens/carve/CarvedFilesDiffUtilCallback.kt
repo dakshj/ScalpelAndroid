@@ -1,6 +1,6 @@
 package com.daksh.scalpelandroid.screens.carve
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 import java.io.File
 
 class CarvedFilesDiffUtilCallback(private val oldList: List<File>,

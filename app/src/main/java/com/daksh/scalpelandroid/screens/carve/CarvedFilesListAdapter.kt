@@ -1,11 +1,10 @@
 package com.daksh.scalpelandroid.screens.carve
 
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import com.daksh.scalpelandroid.R
 import com.daksh.scalpelandroid.extensions.round
 import com.daksh.scalpelandroid.storage.FileOpener
@@ -15,9 +14,9 @@ import java.io.File
 class CarvedFilesListAdapter(
         private val list: MutableList<File> = mutableListOf()
 ) :
-        RecyclerView.Adapter<CarvedFilesListAdapter.CarvedFilesViewHolder>() {
+        androidx.recyclerview.widget.RecyclerView.Adapter<CarvedFilesListAdapter.CarvedFilesViewHolder>() {
 
-    class CarvedFilesViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class CarvedFilesViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
         val textFileName: TextView = itemView.findViewById(R.id.textFileName)
         val textFilePath: TextView = itemView.findViewById(R.id.textFilePath)
         val textFileSize: TextView = itemView.findViewById(R.id.textFileSize)

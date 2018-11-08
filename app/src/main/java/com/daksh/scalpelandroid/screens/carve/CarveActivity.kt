@@ -2,10 +2,9 @@ package com.daksh.scalpelandroid.screens.carve
 
 import android.Manifest
 import android.app.Activity
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
+import androidx.lifecycle.ViewModelProviders
 import com.daksh.scalpelandroid.R
 import com.daksh.scalpelandroid.base.BaseActivity
 import com.daksh.scalpelandroid.extensions.observeK
@@ -34,7 +33,7 @@ class CarveActivity : BaseActivity() {
 
     private lateinit var viewModel: CarveViewModel
 
-    private lateinit var snackBarCarving: Snackbar
+    private lateinit var snackBarCarving: com.google.android.material.snackbar.Snackbar
 
     private lateinit var listAdapter: CarvedFilesListAdapter
 
@@ -68,8 +67,8 @@ class CarveActivity : BaseActivity() {
             listAdapter.updateList(listOf())
         }
 
-        snackBarCarving = Snackbar.make(listResults, getString(R.string.carving),
-                Snackbar.LENGTH_INDEFINITE)
+        snackBarCarving = com.google.android.material.snackbar.Snackbar.make(listResults, getString(R.string.carving),
+                com.google.android.material.snackbar.Snackbar.LENGTH_INDEFINITE)
         snackBarCarving.setAction(getString(R.string.cancel)) {
             viewModel.cancelCarving()
         }

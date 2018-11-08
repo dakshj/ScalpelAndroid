@@ -1,6 +1,6 @@
 package com.daksh.scalpelandroid.inject.viewmodel
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import com.daksh.scalpelandroid.screens.carve.CarveViewModel
 import dagger.Binds
 import dagger.Module
